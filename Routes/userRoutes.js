@@ -2,9 +2,16 @@ const { Router } = require("express"); //Importing Router from "express";
 
 const { users } = require("../Utils/users"); //Importing {users} to get access to the availabe users
 
-const {body, validationResult, matchedData, checkSchema} = require("express-validator"); //Importing functions from "express-validator"
+const {
+  body,
+  validationResult,
+  matchedData,
+  checkSchema,
+} = require("express-validator"); //Importing functions from "express-validator"
 
-const {inputValidationSchema} = require("../Schemas/validationSchema"); //Importing the created validation schema
+const { inputValidationSchema } = require("../Schemas/validationSchema"); //Importing the created validation schema
+
+const { mongooseModel } = require("../Mongoose/userSchema"); //importing {mongooseModel}
 
 const userRoutes = Router(); //Initiating Router by assigning them to a variable
 
@@ -71,7 +78,7 @@ userRoutes.post(
   //     .withMessage("Place must not left empty!"),
   // ], //All these validation parts are now in a separate schema file and we can validate by using checkSchema()
   checkSchema(inputValidationSchema),
-  (request, response) => {
+  async (request, response) => {
     console.log(request.body); //client side always sends data in a body format, use this logic to see the request in a terminal
 
     const result = validationResult(request); //The validationResult() will validate the request with above given conditions
@@ -85,9 +92,18 @@ userRoutes.post(
 
     // const { body } = request; //In order to post some data, we have to destructure the body from the request
 
-    const newUser = { id: users[users.length - 1].id + 1, ...data }; //Logic to add new data
+    const newUser = new mongooseModel(data); //The data will be added to the Data Base using this logic
 
-    users.push(newUser); //This will push the new data into the list
+    try {
+      const saveUser = await newUser.save(); //This logic is used to save the added data to the data base
+      return response.status(200).send(newUser);
+    } catch (err) {
+      console.log(err);
+      return response.status(400).send("Bad Request!");
+    };
+
+    // const newUser = { id: users[users.length - 1].id + 1, ...data }; //Logic to add new data
+    // users.push(newUser); //This will push the new data into the list //Once the database is connected, this logic is not necessary
 
     return response.status(201).send(newUser);
   }
@@ -220,4 +236,4 @@ userRoutes.delete("/api/users/:id", (request, response) => {
   return response.sendStatus(200);
 });
 
-module.exports = {userRoutes} //Exporting {userRoutes}, so that we can use this middleware in index.js
+module.exports = { userRoutes }; //Exporting {userRoutes}, so that we can use this middleware in index.js
