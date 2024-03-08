@@ -13,6 +13,8 @@ const { inputValidationSchema } = require("../Schemas/validationSchema"); //Impo
 
 const { mongooseModel } = require("../Mongoose/userSchema"); //importing {mongooseModel}
 
+const {hashPassword} = require("../Hashing/passwordHash"); //Importing {hashPassword}
+
 const userRoutes = Router(); //Initiating Router by assigning them to a variable
 
 //GET Request
@@ -91,6 +93,8 @@ userRoutes.post(
     //Here instead of using the "body" which is destructured from the request, we have to use the "data" variable for the next steps
 
     // const { body } = request; //In order to post some data, we have to destructure the body from the request
+
+    data.password = hashPassword(data.password); //Before adding the new data to the mongooseModel, we have to hash the password.
 
     const newUser = new mongooseModel(data); //The data will be added to the Data Base using this logic
 

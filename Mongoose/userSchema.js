@@ -12,6 +12,10 @@ const userSchema = new Schema({
     type: Schema.Types.String,
     required: true,
   },
+  password:{
+    type: Schema.Types.String,
+    required: true,
+  }
 }); //Format for preparing a Schema using new Schema()
 
 const mongooseModel = mongoose.model("user", userSchema); //This is how we have to create a mongoose model

@@ -22,6 +22,14 @@ const inputValidationSchema = {
       errorMessage: "Place field must not left empty!",
     },
   },
+  password:{
+    isString:{
+      errorMessage:"Password must be a string!"
+    },
+    notEmpty:{
+      errorMessage:"Password must not left empty"
+    }
+  }
 };
 
 module.exports = {inputValidationSchema} //Exporting the inputValidationSchema object, so that we can import this schema in any file
